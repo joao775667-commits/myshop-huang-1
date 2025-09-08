@@ -1,0 +1,25 @@
+﻿{
+  "products": [
+    {
+      "id": 1,
+      "name": "会摇尾巴的卡皮巴拉",
+      "price": 18.9,
+      "imgs": [
+        "https://i.imgur.com/c2Vebrm.png",
+        "https://i.imgur.com/AF6woGC.png"
+      ],
+      "tags": ["卡皮巴拉","钥匙扣"],
+      "desc": "会摇尾巴哦"
+    },
+    {
+      "id": 2,
+      "name": "不能动的卡皮巴拉",
+      "price": 20.0,
+      "imgs": [
+        "https://i.imgur.com/u9865ri.png"
+      ],
+      "tags": ["卡皮巴拉","钥匙扣"],
+      "desc": "办公室桌面小盆栽"
+    }
+  ]
+}
