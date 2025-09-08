@@ -4,32 +4,58 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>HUANG 黄 - 商品后台管理</title>
+
+  <!-- Netlify Identity Widget -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  
+  <!-- Netlify CMS -->
   <script src="https://unpkg.com/netlify-cms@^2.15.0/dist/netlify-cms.js"></script>
+
   <style>
     body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
     h1 { text-align: center; padding: 20px; }
-    #cms { max-width: 900px; margin: 0 auto; }
+    #cms { max-width: 900px; margin: 20px auto; }
+    #login-area { text-align: center; margin: 20px; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
   </style>
 </head>
 <body>
   <h1>HUANG 黄 - 商品后台管理</h1>
-  <div id="cms"></div>
+
+  <!-- 登录区域 -->
+  <div id="login-area">
+    <button id="loginBtn">登录 / 注册</button>
+  </div>
+
+  <!-- CMS 区域 -->
+  <div id="cms" style="display:none;"></div>
 
   <script>
     // 初始化 Netlify Identity
     if (window.netlifyIdentity) {
       window.netlifyIdentity.on('init', user => {
-        console.log('Identity initialized', user)
+        console.log('Identity initialized', user);
+
+        if (user) {
+          // 已登录，显示 CMS
+          document.getElementById('cms').style.display = 'block';
+          document.getElementById('login-area').style.display = 'none';
+        } else {
+          // 未登录，隐藏 CMS
+          document.getElementById('cms').style.display = 'none';
+          document.getElementById('login-area').style.display = 'block';
+        }
       });
-      window.netlifyIdentity.on('login', () => {
-        window.location.reload();
-      });
-      window.netlifyIdentity.on('logout', () => {
-        window.location.href = '/';
-      });
+
+      window.netlifyIdentity.on('login', () => window.location.reload());
+      window.netlifyIdentity.on('logout', () => window.location.reload());
       window.netlifyIdentity.init();
     }
+
+    // 登录按钮事件
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      window.netlifyIdentity.open();
+    });
   </script>
 
   <!-- Netlify CMS 配置 -->
