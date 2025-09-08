@@ -31,6 +31,11 @@
   <div id="cms" style="display:none;"></div>
 
   <script>
+    // 登录按钮事件
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      window.netlifyIdentity.open();
+    });
+
     // 初始化 Netlify Identity
     if (window.netlifyIdentity) {
       window.netlifyIdentity.on('init', user => {
@@ -43,19 +48,21 @@
         }
       });
 
-      window.netlifyIdentity.on('login', () => window.location.reload());
-      window.netlifyIdentity.on('logout', () => window.location.reload());
+      window.netlifyIdentity.on('login', () => {
+        // 登录后直接显示 CMS
+        document.getElementById('cms').style.display = 'block';
+        document.getElementById('login-area').style.display = 'none';
+      });
+
+      window.netlifyIdentity.on('logout', () => {
+        document.getElementById('cms').style.display = 'none';
+        document.getElementById('login-area').style.display = 'block';
+      });
+
       window.netlifyIdentity.init();
     }
 
-    // 登录按钮事件
-    document.getElementById('loginBtn').addEventListener('click', () => {
-      window.netlifyIdentity.open();
-    });
-  </script>
-
-  <!-- Netlify CMS 配置 -->
-  <script type="text/javascript">
+    // Netlify CMS 配置
     window.CMS_MANUAL_INIT = true;
 
     NetlifyCms.init({
@@ -83,31 +90,6 @@
     });
 
     NetlifyCms.init();
-if (window.netlifyIdentity) {
-  window.netlifyIdentity.on('init', user => {
-    if (user) {
-      // 已登录，显示 CMS
-      document.getElementById('cms').style.display = 'block';
-      document.getElementById('login-area').style.display = 'none';
-    } else {
-      document.getElementById('cms').style.display = 'none';
-      document.getElementById('login-area').style.display = 'block';
-    }
-  });
-
-  window.netlifyIdentity.on('login', () => {
-    // 登录后直接显示 CMS，不刷新页面
-    document.getElementById('cms').style.display = 'block';
-    document.getElementById('login-area').style.display = 'none';
-  });
-
-  window.netlifyIdentity.on('logout', () => {
-    document.getElementById('cms').style.display = 'none';
-    document.getElementById('login-area').style.display = 'block';
-  });
-
-  window.netlifyIdentity.init();
-}
-
+  </script>
 </body>
 </html>
