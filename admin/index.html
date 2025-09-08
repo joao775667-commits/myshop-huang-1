@@ -1,57 +1,70 @@
 ﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>HUANG 黄 - 后台管理</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- Netlify CMS 核心 JS -->
-  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
-  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HUANG 黄 - 商品后台管理</title>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://unpkg.com/netlify-cms@^2.15.0/dist/netlify-cms.js"></script>
   <style>
-    body {
-      font-family: sans-serif;
-      background: #0b0c0f;
-      color: #e8ecf1;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #151821;
-      padding: 16px;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 24px;
-      color: #7c5cff;
-    }
-    .info {
-      text-align: center;
-      margin: 16px 0;
-      font-size: 14px;
-      color: #99a1b3;
-    }
-    .cms-container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 0 16px 32px;
-    }
+    body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
+    h1 { text-align: center; padding: 20px; }
+    #cms { max-width: 900px; margin: 0 auto; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>HUANG 黄 - 商品后台管理</h1>
-  </header>
-  <p class="info">登录 Netlify Identity 后，可以添加/编辑/删除商品，修改图片、价格、标签等</p>
-  
-  <!-- Netlify CMS 容器 -->
-  <div class="cms-container">
-    <!-- Netlify CMS 会自动渲染在这里 -->
-    <script>
-      // 初始化 Netlify CMS
-      CMS.init();
-    </script>
-  </div>
+  <h1>HUANG 黄 - 商品后台管理</h1>
+  <div id="cms"></div>
+
+  <script>
+    // 初始化 Netlify Identity
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on('init', user => {
+        console.log('Identity initialized', user)
+      });
+      window.netlifyIdentity.on('login', () => {
+        window.location.reload();
+      });
+      window.netlifyIdentity.on('logout', () => {
+        window.location.href = '/';
+      });
+      window.netlifyIdentity.init();
+    }
+  </script>
+
+  <!-- Netlify CMS 配置 -->
+  <script type="text/javascript">
+    window.CMS_MANUAL_INIT = true;
+
+    NetlifyCms.init({
+      config: {
+        backend: {
+          name: 'git-gateway',
+          branch: 'main'
+        },
+        media_folder: 'images',
+        public_folder: '/images',
+        collections: [
+          {
+            name: 'products',
+            label: 'Products',
+            folder: 'data/products',
+            create: true,
+            slug: '{{slug}}',
+            fields: [
+              { label: 'Name', name: 'name', widget: 'string' },
+              { label: 'Price', name: 'price', widget: 'number' },
+              { label: 'Images', name: 'imgs', widget: 'list', allow_add: true },
+              { label: 'Tags', name: 'tags', widget: 'list', allow_add: true },
+              { label: 'Description', name: 'desc', widget: 'string' }
+            ]
+          }
+        ]
+      }
+    });
+
+    // 手动初始化 CMS
+    NetlifyCms.init();
+  </script>
 </body>
 </html>
