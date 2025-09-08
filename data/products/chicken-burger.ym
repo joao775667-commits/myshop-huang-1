@@ -1,0 +1,9 @@
+﻿- name: Chicken Burger
+  price: 25
+  imgs:
+    - /images/chicken1.jpg
+    - /images/chicken2.jpg
+  tags:
+    - burger
+    - chicken	
+  desc: 美味鸡肉汉堡
