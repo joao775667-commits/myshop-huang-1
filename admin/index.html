@@ -1,242 +1,57 @@
 ﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HUANG 黄｜商品展示</title>
-  <meta name="description" content="扫码进入的小店商品展示页" />
+  <meta charset="UTF-8">
+  <title>HUANG 黄 - 后台管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Netlify CMS 核心 JS -->
+  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+  
   <style>
-    :root{
-      --bg:#0b0c0f; --card:#151821; --muted:#99a1b3; --txt:#e8ecf1; --brand:#7c5cff;
+    body {
+      font-family: sans-serif;
+      background: #0b0c0f;
+      color: #e8ecf1;
+      margin: 0;
+      padding: 0;
     }
-    *{box-sizing:border-box}
-    body{margin:0; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans"; background:var(--bg); color:var(--txt)}
-    .wrap{max-width:1100px; margin:0 auto; padding:28px 18px 80px}
-    header{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
-    .title{display:flex; gap:12px; align-items:center}
-    .logo{width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,var(--brand),#35c1f1); display:grid; place-items:center; font-weight:900}
-    .logo span{background:#fff; -webkit-background-clip:text; background-clip:text; color:transparent; font-size:20px}
-    h1{margin:0; font-size:22px; letter-spacing:.3px}
-    .toolbar{display:flex; gap:10px; flex-wrap:wrap}
-    input,select,button{background:var(--card); color:var(--txt); border:1px solid #272b36; border-radius:12px; padding:10px 12px; font-size:14px}
-    input:focus,select:focus,button:focus{outline:2px solid #394155}
-    .grid{display:grid; grid-template-columns: repeat( auto-fill, minmax(220px,1fr) ); gap:14px; margin-top:16px}
-    .card{background:var(--card); border:1px solid #222534; border-radius:16px; overflow:hidden; display:flex; flex-direction:column; position:relative}
-
-    /* 小图轮播 & 箭头 */
-    .imgbox { aspect-ratio:1/1; background:#0f1117; display:grid; place-items:center; position:relative; overflow:hidden; }
-    .imgbox img { width:100%; height:100%; object-fit:cover; display:block; }
-    .imgbox button {
-      position:absolute; top:50%; transform:translateY(-50%) scale(0.8);
-      background:rgba(0,0,0,0.3); border:none; color:#fff;
-      font-size:20px; width:36px; height:36px; border-radius:50%;
-      cursor:pointer; z-index:2; display:flex; align-items:center; justify-content:center;
-      transition: background 0.2s, transform 0.3s ease, opacity 0.3s ease;
-      opacity:0;
+    header {
+      background: #151821;
+      padding: 16px;
+      text-align: center;
     }
-    @keyframes arrow-bounce {
-      0%, 100% { transform: translateY(-50%) scale(1); }
-      50% { transform: translateY(-55%) scale(1); }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #7c5cff;
     }
-    .imgbox:hover button {
-      opacity:1;
-      transform:translateY(-50%) scale(1);
-      background:rgba(0,0,0,0.7);
-      animation: arrow-bounce 0.6s ease infinite;
+    .info {
+      text-align: center;
+      margin: 16px 0;
+      font-size: 14px;
+      color: #99a1b3;
     }
-    .imgbox .prev{left:8px;} .imgbox .next{right:8px;}
-    @media (hover: none) { .imgbox button {opacity:1;} }
-
-    .card .body{padding:12px}
-    .name{font-weight:700; font-size:15px; margin:0 0 6px}
-    .price{font-weight:700}
-    .muted{color:var(--muted)}
-    .tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
-    .tag{font-size:12px; padding:4px 8px; border:1px solid #30364a; border-radius:999px; color:#c7cbe0}
-    .footer{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px}
-    .btn{cursor:pointer;}
-    .pill{border-radius:999px}
-
-    /* 统一二维码卡片 */
-    .qrcard{margin-top:28px; background:var(--card); border:1px solid #23273a; border-radius:16px; padding:16px; display:grid; gap:12px}
-    .qrbox{display:flex; gap:18px; align-items:center; flex-wrap:wrap}
-    .qr{width:160px; height:160px; background:#fff; border-radius:12px; display:grid; place-items:center}
-    .help{font-size:14px; color:var(--muted)}
-    a.btn{display:inline-grid; place-items:center; text-decoration:none}
-    .small{font-size:12px}
-
-    /* 放大预览 */
-    .lightbox {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-      display: none; align-items: center; justify-content: center;
-      z-index: 9999;
+    .cms-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 16px 32px;
     }
-    .lightbox img {
-      max-width: 90%; max-height: 90%;
-      border-radius: 12px; box-shadow: 0 0 16px rgba(0,0,0,0.6);
-      animation: fadeIn 0.3s ease;
-    }
-    .lightbox button {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      background: rgba(0,0,0,0.4); border: none; color: #fff;
-      font-size: 28px; width: 40px; height: 40px; border-radius: 50%;
-      cursor: pointer; opacity: 0; transition: opacity 0.3s;
-    }
-    .lightbox:hover button {
-      opacity: 1;
-      animation: arrow-bounce 0.6s ease infinite;
-    }
-    .lightbox .prev { left: 20px; } .lightbox .next { right: 20px; }
-    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-<div class="wrap">
   <header>
-    <div class="title">
-      <div class="logo"><span>店</span></div>
-      <div>
-        <h1>HUANG 黄</h1>
-        <div class="muted small">扫码生成二维码，分享商品展示页</div>
-      </div>
-    </div>
-    <div class="toolbar">
-      <input id="search" placeholder="搜索商品名称或标签…" />
-      <select id="category"><option value="">全部分类</option></select>
-      <button class="btn pill" id="importBtn">导入CSV/JSON</button>
-      <input type="file" id="fileInput" accept=".csv,.json" style="display:none" />
-    </div>
+    <h1>HUANG 黄 - 商品后台管理</h1>
   </header>
-
-  <main>
-    <section id="products" class="grid"></section>
-
-    <!-- 店铺统一二维码区域 -->
-    <section class="qrcard">
-      <div class="qrbox">
-        <div id="qrcode" class="qr"></div>
-        <div>
-          <button id="makeQr" class="btn">生成二维码</button>
-          <div style="height:8px"></div>
-          <a id="downloadQr" class="btn pill" href="#" download="shop-qr.png" style="display:none">下载二维码 PNG</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 放大预览 -->
-    <div class="lightbox" id="lightbox">
-      <button class="prev">←</button>
-      <img src="" alt="preview">
-      <button class="next">→</button>
-    </div>
-  </main>
-</div>
-
-<script>
-  // ===== 初始化状态 =====
-  const state = { q: "", cat: "", data: [] };
-  const $ = (s, root=document) => root.querySelector(s);
-  const $$ = (s, root=document) => Array.from(root.querySelectorAll(s));
-
-  // ===== 渲染函数 =====
-  function money(n){ return '¥'+n.toFixed(2); }
-  function render(){
-    const wrap=$('#products'); 
-    wrap.innerHTML='';
-    state.data.filter(p=>{
-      const hitQ = state.q ? (p.name+p.tags.join(' ')+(p.desc||'')).toLowerCase().includes(state.q.toLowerCase()) : true;
-      const hitC = state.cat ? p.tags.includes(state.cat) : true;
-      return hitQ && hitC;
-    }).forEach(p=>{
-      const card=document.createElement('article'); 
-      card.className='card';
-      card.innerHTML=`
-        <div class="imgbox">
-          <button class="prev">←</button>
-          <img class="main-img" src="${p.imgs[0]}" alt="${p.name}">
-          <button class="next">→</button>
-        </div>
-        <div class="body">
-          <h3 class="name">${p.name}</h3>
-          <div class="muted small">${p.desc||''}</div>
-          <div class="footer">
-            <div class="price">${money(p.price)}</div>
-            <button class="btn pill" data-id="${p.id}">复制</button>
-          </div>
-          <div class="tags">${p.tags.map(t=>`<span class="tag">#${t}</span>`).join('')}</div>
-        </div>`;
-      wrap.appendChild(card);
-    });
-  }
-
-  // ===== 读取 CMS JSON 数据 =====
-  fetch('data/products/products.json')
-    .then(res => res.json())
-    .then(data => {
-      state.data = data.products;
-      // 渲染分类下拉
-      const categories = Array.from(new Set(state.data.flatMap(p => p.tags)));
-      const catSel = $('#category');
-      catSel.innerHTML = '<option value="">全部分类</option>';
-      categories.forEach(c=>{
-        let o = document.createElement('option'); o.value=c; o.textContent=c; catSel.appendChild(o);
-      });
-      render();
-    })
-    .catch(err => console.error("读取商品数据失败:", err));
-
-  // ===== 搜索 & 分类 =====
-  $('#search').addEventListener('input',e=>{state.q=e.target.value.trim();render();});
-  $('#category').addEventListener('change',e=>{state.cat=e.target.value;render();});
-
-  // ===== 多图轮播 =====
-  document.addEventListener('click',e=>{
-    const btn=e.target.closest('.prev,.next'); if(!btn) return;
-    const card=btn.closest('.card'), imgEl=card.querySelector('.main-img');
-    const id=+card.querySelector('button[data-id]').dataset.id;
-    const product=state.data.find(p=>p.id===id); if(!product) return;
-    let idx=product.imgs.indexOf(imgEl.src);
-    idx = btn.classList.contains('next') ? (idx+1)%product.imgs.length : (idx-1+product.imgs.length)%product.imgs.length;
-    imgEl.src=product.imgs[idx];
-  });
-
-  // ===== 放大预览 =====
-  const lightbox=$('#lightbox'), lightboxImg=lightbox.querySelector('img');
-  let currentProduct=null, currentIndex=0;
-  document.addEventListener('click',e=>{
-    const img=e.target.closest('.main-img'); if(!img) return;
-    const card=img.closest('.card');
-    const id=+card.querySelector('button[data-id]').dataset.id;
-    currentProduct=state.data.find(p=>p.id===id);
-    currentIndex=currentProduct.imgs.indexOf(img.src);
-    lightboxImg.src=img.src; lightbox.style.display='flex';
-  });
-  lightbox.addEventListener('click',e=>{
-    if(e.target===lightbox){ lightbox.style.display='none'; lightboxImg.src=''; currentProduct=null; }
-  });
-  lightbox.querySelector('.prev').addEventListener('click',e=>{
-    e.stopPropagation(); if(!currentProduct) return;
-    currentIndex=(currentIndex-1+currentProduct.imgs.length)%currentProduct.imgs.length;
-    lightboxImg.src=currentProduct.imgs[currentIndex];
-  });
-  lightbox.querySelector('.next').addEventListener('click',e=>{
-    e.stopPropagation(); if(!currentProduct) return;
-    currentIndex=(currentIndex+1)%currentProduct.imgs.length;
-    lightboxImg.src=currentProduct.imgs[currentIndex];
-  });
-
-  // ===== 生成二维码 =====
-  $('#makeQr').addEventListener('click',()=>{
-    const box=document.getElementById('qrcode');
-    box.innerHTML='';
-    new QRCode(box,{ text: window.location.href, width:160, height:160 });
-    const canvas=box.querySelector('canvas');
-    if(canvas){
-      $('#downloadQr').href=canvas.toDataURL('image/png');
-      $('#downloadQr').style.display='inline-grid';
-    }
-  });
-</script>
+  <p class="info">登录 Netlify Identity 后，可以添加/编辑/删除商品，修改图片、价格、标签等</p>
+  
+  <!-- Netlify CMS 容器 -->
+  <div class="cms-container">
+    <!-- Netlify CMS 会自动渲染在这里 -->
+    <script>
+      // 初始化 Netlify CMS
+      CMS.init();
+    </script>
+  </div>
 </body>
 </html>

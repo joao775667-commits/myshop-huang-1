@@ -1,8 +1,8 @@
 ﻿backend:
   name: git-gateway
-  branch: main  # 你的 GitHub 主分支
+  branch: main  # 替换为你的 GitHub 主分支
 
-media_folder: "images"
+media_folder: "images"       # 上传图片存放的文件夹
 public_folder: "/images"
 
 collections:
@@ -13,7 +13,7 @@ collections:
     slug: "{{slug}}"
     fields:
       - { label: "Name", name: "name", widget: "string" }
-      - { label: "Price", name: "price", widget: "number" }  # 用 number 更合理
-      - { label: "Images", name: "imgs", widget: "list", allow_add: true } # 支持多图
+      - { label: "Price", name: "price", widget: "number" }
+      - { label: "Images", name: "imgs", widget: "list", allow_add: true }
       - { label: "Tags", name: "tags", widget: "list", allow_add: true }
       - { label: "Description", name: "desc", widget: "string" }
