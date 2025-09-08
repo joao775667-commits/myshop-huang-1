@@ -133,129 +133,24 @@
   </main>
 </div>
 
- <script>
-    // ===== 1) 商品数据示例 =====
-    const PRODUCTS = [
-      { 
-        id: 1, 
-        name: "会摇尾巴的卡皮巴拉", 
-        price: 18.9, 
-        imgs: [
-          "https://i.imgur.com/c2Vebrm.png",
-          "https://i.imgur.com/AF6woGC.png",
-          "https://i.imgur.com/qsc5fCD.png",
-          "https://i.imgur.com/5gdyIy4.png",
-          "https://i.imgur.com/eeVRzdR.png",
-          "https://i.imgur.com/V4jUB3s.png",
-          "https://i.imgur.com/h3p8eYm.png",
-          "https://i.imgur.com/IdMKckH.png"
-        ], 
-        tags: ["卡皮巴拉","钥匙扣"], 
-        desc: "会摇尾巴哦" 
-      },
-      { 
-        id: 2, 
-        name: "不能动的卡皮巴拉", 
-        price: 20.0, 
-        imgs: [
-          "https://i.imgur.com/u9865ri.png",
-          "https://i.imgur.com/3pe8Ck5.png",
-          "https://i.imgur.com/pOw9Pjt.png",
-          "https://i.imgur.com/iEWkGPB.png",
-          "https://i.imgur.com/IoN3g0l.png",
-          "https://i.imgur.com/AyBO62A.png",
-          "https://i.imgur.com/yKvnYEE.png",
-          "https://i.imgur.com/BY1Jpjq.png",
-          "https://i.imgur.com/DOmNBRr.png",
-          "https://i.imgur.com/h3p8eYm.png"
-        ], 
-        tags: ["卡皮巴拉","钥匙扣"], 
-        desc: "办公室桌面小盆栽" 
-      },
-      { 
-        id: 3, 
-        name: "小熊钥匙扣", 
-        price: 25.0, 
-        imgs: [
-          "https://i.imgur.com/zYYYaXo.png",
-          "https://i.imgur.com/UxGntbs.png",
-          "https://i.imgur.com/8korGsW.png",
-          "https://i.imgur.com/LqJXmZb.png",
-          "https://i.imgur.com/gojazPY.png",
-          "https://i.imgur.com/3GtIxBy.png",
-          "https://i.imgur.com/3vO1zX3.png"
-        ], 
-        tags: ["小熊","钥匙扣"], 
-        desc: "办公室桌面小盆栽" 
-      },
-      { 
-        id: 4, 
-        name: "鼻涕泡卡皮巴拉", 
-        price: 25.0, 
-        imgs: [
-          "https://i.imgur.com/m7BLeaX.png",
-          "https://i.imgur.com/nnFfp9w.png",
-          "https://i.imgur.com/ddamoXS.png",
-          "https://i.imgur.com/wJrTwlv.png",
-          "https://i.imgur.com/xuZAMG9.png",
-          "https://i.imgur.com/COIDF9y.png"
-        ], 
-        tags: ["卡皮巴拉","钥匙扣"], 
-        desc: "办公室桌面小盆栽" 
-      },
-      { 
-        id: 5, 
-        name: "卡皮巴拉手提包1", 
-        price: 25.0, 
-        imgs: [
-          "https://i.imgur.com/u32QY0w.png",
-          "https://i.imgur.com/gfwlMMZ.png",
-          "https://i.imgur.com/Nbp8INh.png",
-          "https://i.imgur.com/wJrTwlv.png",
-          "https://i.imgur.com/JUrpomY.png",
-          "https://i.imgur.com/deu4XEW.png",
-          "https://i.imgur.com/vvIrCGM.png"
-        ], 
-        tags: ["卡皮巴拉","手提包"], 
-        desc: "办公室桌面小盆栽" 
-      },
-      { 
-        id: 6, 
-        name: "卡皮巴拉手提包2", 
-        price: 25.0, 
-        imgs: [
-          "https://i.imgur.com/jqXbhsa.png",
-          "https://i.imgur.com/JeoAwBs.png",
-          "https://i.imgur.com/81fWQep.png",
-          "https://i.imgur.com/tIXTrc1.png",
-          "https://i.imgur.com/4ZI6oM3.png",
-          "https://i.imgur.com/fdlmuSJ.png",
-          "https://i.imgur.com/XZbACLY.jpeg"
-        ], 
-        tags: ["卡皮巴拉","手提包"], 
-        desc: "办公室桌面小盆栽" 
-      }
-    ];
+<script>
+  // ===== 初始化状态 =====
+  const state = { q: "", cat: "", data: [] };
+  const $ = (s, root=document) => root.querySelector(s);
+  const $$ = (s, root=document) => Array.from(root.querySelectorAll(s));
 
-    // ===== 2) 渲染逻辑 =====
-    const $ = (s, root=document) => root.querySelector(s);
-    const $$ = (s, root=document) => Array.from(root.querySelectorAll(s));
-
-    const state = { q: "", cat: "", data: PRODUCTS };
-  // 分类下拉
-  const categories = Array.from(new Set(PRODUCTS.flatMap(p=>p.tags)));
-  const catSel = $('#category'); categories.forEach(c=>{ let o=document.createElement('option'); o.value=c; o.textContent=c; catSel.appendChild(o); });
-
-  // 渲染
+  // ===== 渲染函数 =====
   function money(n){ return '¥'+n.toFixed(2); }
   function render(){
-    const wrap=$('#products'); wrap.innerHTML='';
+    const wrap=$('#products'); 
+    wrap.innerHTML='';
     state.data.filter(p=>{
       const hitQ = state.q ? (p.name+p.tags.join(' ')+(p.desc||'')).toLowerCase().includes(state.q.toLowerCase()) : true;
       const hitC = state.cat ? p.tags.includes(state.cat) : true;
       return hitQ && hitC;
     }).forEach(p=>{
-      const card=document.createElement('article'); card.className='card';
+      const card=document.createElement('article'); 
+      card.className='card';
       card.innerHTML=`
         <div class="imgbox">
           <button class="prev">←</button>
@@ -274,12 +169,28 @@
       wrap.appendChild(card);
     });
   }
-  render();
 
+  // ===== 读取 CMS JSON 数据 =====
+  fetch('data/products/products.json')
+    .then(res => res.json())
+    .then(data => {
+      state.data = data.products;
+      // 渲染分类下拉
+      const categories = Array.from(new Set(state.data.flatMap(p => p.tags)));
+      const catSel = $('#category');
+      catSel.innerHTML = '<option value="">全部分类</option>';
+      categories.forEach(c=>{
+        let o = document.createElement('option'); o.value=c; o.textContent=c; catSel.appendChild(o);
+      });
+      render();
+    })
+    .catch(err => console.error("读取商品数据失败:", err));
+
+  // ===== 搜索 & 分类 =====
   $('#search').addEventListener('input',e=>{state.q=e.target.value.trim();render();});
   $('#category').addEventListener('change',e=>{state.cat=e.target.value;render();});
 
-  // 多图轮播
+  // ===== 多图轮播 =====
   document.addEventListener('click',e=>{
     const btn=e.target.closest('.prev,.next'); if(!btn) return;
     const card=btn.closest('.card'), imgEl=card.querySelector('.main-img');
@@ -290,7 +201,7 @@
     imgEl.src=product.imgs[idx];
   });
 
-  // 放大预览
+  // ===== 放大预览 =====
   const lightbox=$('#lightbox'), lightboxImg=lightbox.querySelector('img');
   let currentProduct=null, currentIndex=0;
   document.addEventListener('click',e=>{
@@ -315,7 +226,7 @@
     lightboxImg.src=currentProduct.imgs[currentIndex];
   });
 
-  // 生成二维码（统一店铺）
+  // ===== 生成二维码 =====
   $('#makeQr').addEventListener('click',()=>{
     const box=document.getElementById('qrcode');
     box.innerHTML='';
