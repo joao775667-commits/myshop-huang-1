@@ -1,19 +1,20 @@
 ﻿backend:
-  name: git-gateway
-  branch: main  # 替换为你的 GitHub 主分支
+  name: git-gateway      # 使用 Netlify Identity + Git Gateway
+  branch: main           # 你网站的主分支
 
-media_folder: "images"       # 上传图片存放的文件夹
-public_folder: "/images"
+media_folder: "images"    # 上传图片保存到 images/
+public_folder: "/images"  # 前台访问路径
 
 collections:
   - name: "products"
-    label: "Products"
+    label: "商品管理"
     folder: "data/products"
     create: true
     slug: "{{slug}}"
+    format: json
     fields:
-      - { label: "Name", name: "name", widget: "string" }
-      - { label: "Price", name: "price", widget: "number" }
-      - { label: "Images", name: "imgs", widget: "list", allow_add: true }
-      - { label: "Tags", name: "tags", widget: "list", allow_add: true }
-      - { label: "Description", name: "desc", widget: "string" }
+      - { label: "名称", name: "name", widget: "string" }
+      - { label: "描述", name: "desc", widget: "text" }
+      - { label: "价格", name: "price", widget: "number", value_type: "float" }
+      - { label: "标签", name: "tags", widget: "list" }
+      - { label: "图片", name: "imgs", widget: "list" }

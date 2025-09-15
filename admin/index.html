@@ -1,95 +1,160 @@
 ﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>HUANG 黄 - 商品后台管理</title>
-
-  <!-- Netlify Identity Widget -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
-  <!-- Netlify CMS -->
-  <script src="https://unpkg.com/netlify-cms@^2.15.0/dist/netlify-cms.js"></script>
-
-  <style>
-    body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
-    h1 { text-align: center; padding: 20px; }
-    #cms { max-width: 900px; margin: 20px auto; }
-    #login-area { text-align: center; margin: 20px; }
-    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>后台管理 - 商品管理</title>
+<style>
+body{font-family:sans-serif;background:#111;color:#eee;padding:20px;}
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th,td{border:1px solid #333;padding:6px;text-align:center;vertical-align:top;}
+input,select{padding:4px;margin:2px;}
+button{padding:4px 8px;margin:2px;}
+img{width:60px;height:60px;object-fit:cover;margin:2px;}
+.img-preview{display:flex;flex-wrap:wrap;gap:4px;}
+</style>
 </head>
 <body>
-  <h1>HUANG 黄 - 商品后台管理</h1>
+<h1>后台管理 - 商品上架/下架</h1>
 
-  <!-- 登录区域 -->
-  <div id="login-area">
-    <button id="loginBtn">登录 / 注册</button>
-  </div>
+<input type="file" id="importFile" accept=".json">
+<button id="addProduct">➕ 新增商品</button>
+<button id="loadExample">加载示例商品</button>
+<button id="exportJson">导出 JSON</button>
 
-  <!-- CMS 区域 -->
-  <div id="cms" style="display:none;"></div>
+<table>
+<thead>
+<tr>
+<th>图片（可多选）</th>
+<th>名称</th>
+<th>价格</th>
+<th>标签（逗号分隔）</th>
+<th>描述</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody id="productTable"></tbody>
+</table>
 
-  <script>
-    // 登录按钮事件
-    document.getElementById('loginBtn').addEventListener('click', () => {
-      window.netlifyIdentity.open();
-    });
+<script>
+let products=[];
 
-    // 初始化 Netlify Identity
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on('init', user => {
-        if (user) {
-          document.getElementById('cms').style.display = 'block';
-          document.getElementById('login-area').style.display = 'none';
-        } else {
-          document.getElementById('cms').style.display = 'none';
-          document.getElementById('login-area').style.display = 'block';
-        }
-      });
+// 渲染表格
+function renderTable(){
+  const tbody=document.getElementById('productTable');
+  tbody.innerHTML='';
+  products.forEach((p,i)=>{
+    const tr=document.createElement('tr');
 
-      window.netlifyIdentity.on('login', () => {
-        // 登录后直接显示 CMS
-        document.getElementById('cms').style.display = 'block';
-        document.getElementById('login-area').style.display = 'none';
-      });
+    // 图片列
+    const imgsHtml=p.imgs.map(url=>`<img src="${url}">`).join('');
+    tr.innerHTML=`
+      <td>
+        <input type="file" data-index="${i}" class="imgInput" multiple><br>
+        <div class="img-preview">${imgsHtml}</div>
+      </td>
+      <td><input value="${p.name}" data-index="${i}" data-field="name"></td>
+      <td><input value="${p.price}" type="number" step="0.01" data-index="${i}" data-field="price"></td>
+      <td><input value="${p.tags.join(',')}" data-index="${i}" data-field="tags"></td>
+      <td><input value="${p.desc}" data-index="${i}" data-field="desc"></td>
+      <td><button class="deleteBtn" data-index="${i}">删除</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
 
-      window.netlifyIdentity.on('logout', () => {
-        document.getElementById('cms').style.display = 'none';
-        document.getElementById('login-area').style.display = 'block';
-      });
-
-      window.netlifyIdentity.init();
+// 处理输入改变
+document.addEventListener('input', e=>{
+  const idx=e.target.dataset.index;
+  const f=e.target.dataset.field;
+  if(idx!==undefined && f){
+    if(f==='tags'){
+      products[idx][f]=e.target.value.split(',').map(s=>s.trim());
+    } else {
+      products[idx][f]=f==='price'?parseFloat(e.target.value):e.target.value;
     }
+  }
+});
 
-    // Netlify CMS 配置
-    window.CMS_MANUAL_INIT = true;
+// 删除商品
+document.addEventListener('click', e=>{
+  if(e.target.classList.contains('deleteBtn')){
+    products.splice(e.target.dataset.index,1);
+    renderTable();
+  }
+});
 
-    NetlifyCms.init({
-      config: {
-        backend: { name: 'git-gateway', branch: 'main' },
-        media_folder: 'images',
-        public_folder: '/images',
-        collections: [
-          {
-            name: 'products',
-            label: 'Products',
-            folder: 'data/products',
-            create: true,
-            slug: '{{slug}}',
-            fields: [
-              { label: 'Name', name: 'name', widget: 'string' },
-              { label: 'Price', name: 'price', widget: 'number' },
-              { label: 'Images', name: 'imgs', widget: 'list', allow_add: true },
-              { label: 'Tags', name: 'tags', widget: 'list', allow_add: true },
-              { label: 'Description', name: 'desc', widget: 'string' }
-            ]
-          }
-        ]
-      }
-    });
+// 多图片上传
+document.addEventListener('change', e=>{
+  if(e.target.classList.contains('imgInput')){
+    const idx=e.target.dataset.index;
+    const files=e.target.files;
+    if(files.length>0){
+      const urls=[];
+      Array.from(files).forEach(f=>{
+        urls.push(URL.createObjectURL(f)); // 本地预览
+      });
+      products[idx].imgs=urls;
+      renderTable();
+    }
+  }
+});
 
-    NetlifyCms.init();
-  </script>
+// 导入 JSON
+document.getElementById('importFile').addEventListener('change', e=>{
+  const file=e.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      products=data.products || [];
+      renderTable();
+    } catch(err){
+      alert('JSON解析错误');
+    }
+  }
+  reader.readAsText(file);
+});
+
+// 导出 JSON
+document.getElementById('exportJson').addEventListener('click', ()=>{
+  const blob=new Blob([JSON.stringify({products},null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='products.json';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// 新增空白商品
+document.getElementById('addProduct').addEventListener('click', ()=>{
+  const newProduct={
+    id: Date.now(),
+    name:'',
+    price:0,
+    imgs:[],
+    tags:[],
+    desc:''
+  };
+  products.push(newProduct);
+  renderTable();
+});
+
+// 加载示例数据（改成追加）
+document.getElementById('loadExample').addEventListener('click', ()=>{
+  const newProduct = {
+    id: Date.now(),
+    name:'示例商品',
+    price:18.9,
+    imgs:['images/demo.png'],
+    tags:['示例'],
+    desc:'示例描述'
+  };
+  products.push(newProduct);
+  renderTable();
+});
+</script>
 </body>
 </html>
